@@ -79,6 +79,7 @@
       (,djinni-keywords-regexp . font-lock-keyword-face))))
 
 (defun djinni-font-lock-setup ()
+  "Configures font locking in djinni-mode."
   (setq font-lock-defaults
         '((djinni-font-lock-keywords))))
 
@@ -103,6 +104,9 @@
 
 ;; Compilation
 (defun djinni-compile-configuration ()
+  "Configures compile variables to use a custom script for Djinni
+files and to match line column information in compilation
+errors."
   (add-to-list 'compilation-error-regexp-alist-alist
                '(djinni
                  "\\([_[:alnum:]-/]*.djinni\\)\s(\\([[:digit:]]+\\).\\([[:digit:]]+\\)).*$"
