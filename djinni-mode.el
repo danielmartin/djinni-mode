@@ -2,9 +2,11 @@
 
 ;; Copyright (C) 2019 Daniel Martín (mardani29@yahoo.es)
 
+;; Author: Daniel Martín <mardani29@yahoo.es>
+;; URL: https://github.com/danielmartin/djinni-mode
 ;; Version: 1.0
 ;; Package-Requires: ((emacs "24.4"))
-;; Keywords: djinni
+;; Keywords: languages
 
 ;; This file is not part of GNU Emacs.
 
