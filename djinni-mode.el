@@ -62,11 +62,9 @@
                          "binary" "date" "list" "set" "map" "optional"))
 
          ;; Generate an optimized regexp for each category.
-         (djinni-keywords-regexp (regexp-opt djinni-keywords 'words))
-         (djinni-types-regexp (regexp-opt djinni-types 'words))
-         )
-    `(
-      ("\\([a-zA-Z0-9_]+\\)\\s-*:\\s-*\\([a-zA-Z0-9_]+\\)" (1 'font-lock-variable-name-face) (2 'font-lock-type-face))
+         (djinni-keywords-regexp (regexp-opt djinni-keywords 'symbols))
+         (djinni-types-regexp (regexp-opt djinni-types 'symbols)))
+    `(("\\([a-zA-Z0-9_]+\\)\\s-*:\\s-*\\([a-zA-Z0-9_]+\\)" (1 'font-lock-variable-name-face) (2 'font-lock-type-face))
       ("^\\s-*\\([a-zA-Z0-9_]+\\)\\s-*;" . (1 'font-lock-variable-name-face))
       ("+\\(j\\|c\\|o\\)\\b" . font-lock-keyword-face)
       ;; @import is also considered a keyword.
@@ -79,7 +77,7 @@
       (,djinni-keywords-regexp . font-lock-keyword-face))))
 
 (defun djinni-font-lock-setup ()
-  "Configures font locking in djinni-mode."
+  "Configures font locking in ‘djinni-mode’."
   (setq font-lock-defaults
         '((djinni-font-lock-keywords))))
 
@@ -104,9 +102,9 @@
 
 ;; Compilation
 (defun djinni-compile-configuration ()
-  "Configures compile variables to use a custom script for Djinni
-files and to match line column information in compilation
-errors."
+  "Configures compile variables to use a custom script to compile Djinni files.
+Line and column information is also parsed from compilation
+buffers."
   (add-to-list 'compilation-error-regexp-alist-alist
                '(djinni
                  "\\([_[:alnum:]-/]*.djinni\\)\s(\\([[:digit:]]+\\).\\([[:digit:]]+\\)).*$"
@@ -118,10 +116,11 @@ errors."
 (add-hook 'djinni-mode-hook 'djinni-compile-configuration)
 
 ;; Keybindings
-(defvar djinni-mode-map nil "Keymap for `djinni-mode'")
-(progn
-  (setq djinni-mode-map (make-sparse-keymap))
-  (define-key djinni-mode-map (kbd "C-c C-c") 'compile))
+(defvar djinni-mode-map
+  (let ((djinni-mode-map (make-sparse-keymap)))
+    (define-key djinni-mode-map (kbd "C-c C-c") 'compile)
+    djinni-mode-map)
+  "Keymap for `djinni-mode'.")
 
 ;;;###autoload
 (define-derived-mode djinni-mode prog-mode "Djinni"
@@ -134,8 +133,7 @@ errors."
   (setq indent-tabs-mode nil)
   (setq-local indent-line-function 'djinni-indent-line)
   ;; Font locking
-  (djinni-font-lock-setup)
-  )
+  (djinni-font-lock-setup))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.djinni\\'" . djinni-mode))
