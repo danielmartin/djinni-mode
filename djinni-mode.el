@@ -32,12 +32,17 @@
 
 (require 'compile)
 
+(defgroup djinni nil
+  "Editing and compiling Djinni files."
+  :group 'languages)
+
 (defcustom djinni-basic-offset 4
   "Indentation width to use in Djinni files."
   :type 'integer
   :group 'djinni)
 
-(defcustom djinni-compile-command "./run_djinni.sh"
+;;;###autoload
+(defcustom djinni-compile-command (purecopy "./run_djinni.sh")
   "Name of the script to compile Djinni files."
   :type 'string
   :group 'djinni)
@@ -101,24 +106,28 @@
     (indent-line-to indent-col)))
 
 ;; Compilation
-(defun djinni-compile-configuration ()
-  "Configures compile variables to use a custom script to compile Djinni files.
-Line and column information is also parsed from compilation
-buffers."
-  (add-to-list 'compilation-error-regexp-alist-alist
-               '(djinni
-                 "\\([_[:alnum:]-/]*.djinni\\)\s(\\([[:digit:]]+\\).\\([[:digit:]]+\\)).*$"
-                 1 2 3))
-  (add-to-list 'compilation-error-regexp-alist 'djinni)
-  (make-local-variable 'compile-command)
-  (setq compile-command djinni-compile-command))
-
-(add-hook 'djinni-mode-hook 'djinni-compile-configuration)
+;;;###autoload
+(defun djinni-compile (command)
+  "Compiles a Djinni file in current buffer."
+  (interactive
+   (list
+    (let ((command (eval djinni-compile-command)))
+     (if (or compilation-read-command current-prefix-arg)
+	 (compilation-read-command command)
+       command))))
+  (let* ((compilation-buffer-name-function (lambda (major-mode-name) "*Djinni compilation*"))
+         (buffer (compile command)))
+    (with-current-buffer buffer
+      (add-to-list 'compilation-error-regexp-alist-alist
+                   '(djinni
+                     "\\([_[:alnum:]-/]*.djinni\\)\s(\\([[:digit:]]+\\).\\([[:digit:]]+\\)).*$"
+                     1 2 3))
+      (setq-local compilation-error-regexp-alist '(djinni)))))
 
 ;; Keybindings
 (defvar djinni-mode-map
   (let ((djinni-mode-map (make-sparse-keymap)))
-    (define-key djinni-mode-map (kbd "C-c C-c") 'compile)
+    (define-key djinni-mode-map (kbd "C-c C-c") 'djinni-compile)
     djinni-mode-map)
   "Keymap for `djinni-mode'.")
 
