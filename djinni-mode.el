@@ -105,6 +105,17 @@
         (setq indent-col (- indent-col djinni-basic-offset))))
     (indent-line-to indent-col)))
 
+(defun djinni-compile-configuration ()
+  "Configures `compilation-error-regexp-alist-alist' to parse
+line and column information from errors in the compilation
+buffer."
+  (add-to-list 'compilation-error-regexp-alist-alist
+                   '(djinni
+                     "\\([_[:alnum:]-/]*.djinni\\)\s(\\([[:digit:]]+\\).\\([[:digit:]]+\\)).*$"
+                     1 2 3)))
+
+(add-hook 'djinni-mode-hook 'djinni-compile-configuration)
+
 ;; Compilation
 ;;;###autoload
 (defun djinni-compile (command)
@@ -118,10 +129,6 @@
   (let* ((compilation-buffer-name-function (lambda (major-mode-name) "*Djinni compilation*"))
          (buffer (compile command)))
     (with-current-buffer buffer
-      (add-to-list 'compilation-error-regexp-alist-alist
-                   '(djinni
-                     "\\([_[:alnum:]-/]*.djinni\\)\s(\\([[:digit:]]+\\).\\([[:digit:]]+\\)).*$"
-                     1 2 3))
       (setq-local compilation-error-regexp-alist '(djinni)))))
 
 ;; Keybindings
