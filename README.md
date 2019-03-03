@@ -1,3 +1,5 @@
+[![Melpa Status](http://melpa.milkbox.net/packages/djinni-mode-badge.svg)](http://melpa.milkbox.net/#/djinni-mode)
+
 # djinni-mode
 Emacs major mode for Djinni files (https://github.com/dropbox/djinni). Djinni is an IDL used to
 generate cross-platform interfaces in C++, Objective-C and Java.
